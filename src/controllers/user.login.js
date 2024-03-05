@@ -8,18 +8,39 @@ const login = async (req, res) => {
         msg: "Email y password no pueden estar vacios",
         code: 400
       });
-  };
+  }
 
-  res.status(200).json({
-    code: 200,
-    msg: `Los datos son correctos`,
-    data: [
-      email,
-      password
-    ]
-  })
+  try{
+    const user = await User.findOne({email: email})
+
+    if(!user) {
+    return  res.status(400).json({
+        code: 400,
+        msg: "Usuario no registrado"
+      })
+    }
+
+    if(user.password !== password) {
+      return res.status(400).json({
+        code: 400,
+        msg: "contraseña incorrecta"
+      })
+    }
 
 
+    res.status(200).json({
+      code: 200,
+      msg: "Usuario logeado con exito",
+      data: {
+        name: user.name, 
+        id: user._id
+      }
+    })
+
+  }
+  catch (error){
+    console.log(error);
+  }
 
 
 }
